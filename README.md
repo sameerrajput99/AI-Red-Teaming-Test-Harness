@@ -1,2 +1,2 @@
 # AI-Red-Teaming-Test-Harness
-A safe local AI Red Teaming test harness for running LLM security test cases, comparing vulnerable vs secure AI behavior, generating CSV results, and producing vulnerability reports.
+A reusable Python framework for structured AI Red Teaming tests, vulnerable-vs-hardened comparison, evidence capture and security reporting.
