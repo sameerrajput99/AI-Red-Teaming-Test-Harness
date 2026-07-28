@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-red-teaming-test-harness"
+version = "0.1.0"
+description = "A safe local framework for validating and running structured AI red teaming test cases."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Muhammad Sameer" }
+]
+dependencies = [
+  "pydantic>=2.0,<3.0",
+  "PyYAML>=6.0,<7.0",
+  "rich>=13.0,<15.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0,<10.0"
+]
+
+[project.scripts]
+validate-ai-tests = "ai_red_teaming_harness.validate_cases:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
