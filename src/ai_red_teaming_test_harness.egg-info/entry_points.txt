@@ -1,0 +1,2 @@
+[console_scripts]
+validate-ai-tests = ai_red_teaming_harness.validate_cases:main
