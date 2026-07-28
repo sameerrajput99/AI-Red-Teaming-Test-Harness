@@ -1,0 +1,102 @@
+Metadata-Version: 2.4
+Name: ai-red-teaming-test-harness
+Version: 0.1.0
+Summary: A safe local framework for validating and running structured AI red teaming test cases.
+Author: Muhammad Sameer
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pydantic<3.0,>=2.0
+Requires-Dist: PyYAML<7.0,>=6.0
+Requires-Dist: rich<15.0,>=13.0
+Provides-Extra: dev
+Requires-Dist: pytest<10.0,>=8.0; extra == "dev"
+Dynamic: license-file
+
+# AI Red Teaming Test Harness
+
+A safe, local and reproducible framework for defining structured AI security test cases.
+
+## Day 1 Status
+
+The first milestone validates structured YAML test cases before they are sent to any chatbot.
+
+Current capabilities:
+
+- A strict test-case schema
+- Three starter test cases
+- YAML loading with safe parsing
+- Clear validation errors
+- Automated unit tests
+
+## Why This Project Exists
+
+Manual AI security testing becomes difficult to reproduce when prompts, expected behavior and evidence are stored informally. This project turns those checks into structured test cases that can later be executed against vulnerable and hardened chatbot configurations.
+
+## Day 1 Architecture
+
+```text
+YAML Test Pack
+      ↓
+Safe YAML Loader
+      ↓
+Pydantic Schema Validation
+      ↓
+Valid TestCase Objects
+      ↓
+Ready for the future Test Runner
+```
+
+## Setup on Windows PowerShell
+
+```powershell
+py --version
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+```
+
+If PowerShell blocks activation, use Command Prompt instead:
+
+```bat
+.venv\Scripts\activate.bat
+```
+
+## Validate the Starter Test Pack
+
+```powershell
+validate-ai-tests test_packs/day1_test_cases.yaml
+```
+
+Alternative command:
+
+```powershell
+python -m ai_red_teaming_harness.validate_cases test_packs/day1_test_cases.yaml
+```
+
+Expected result:
+
+```text
+Validated 3 test cases successfully.
+```
+
+## Run Unit Tests
+
+```powershell
+pytest
+```
+
+## Starter Test Categories
+
+1. Prompt leakage attack
+2. Instruction override attack
+3. Benign control
+
+## Important Security Principle
+
+A test harness does not prove that an AI system is fully secure. It produces repeatable evidence for the specific tests and evaluators that were defined.
+
+## Ethical Use
+
+This project is for safe local simulation, defensive testing, education and portfolio development. Do not use it against systems without explicit authorization.
