@@ -1,87 +1,141 @@
 # AI Red Teaming Test Harness
 
-A safe, local and reproducible framework for defining structured AI security test cases.
+A safe, local and reproducible Python framework for defining, executing, evaluating, reporting and comparing structured AI security tests.
 
-## Day 1 Status
+## Current Status: Day 5
 
-The first milestone validates structured YAML test cases before they are sent to any chatbot.
+The project can now:
 
-Current capabilities:
+- Validate structured YAML test packs
+- Execute the same tests against mock vulnerable and hardened configurations
+- Capture raw prompts, responses, errors, latency and timestamps
+- Evaluate responses as `PASS`, `FAIL`, `REVIEW` or `ERROR`
+- Export full evidence to JSON, flat CSV and compact summary JSON
+- Compare a baseline configuration with a candidate configuration test by test
+- Classify each change as `IMPROVED`, `REGRESSED`, `UNCHANGED_PASS`, `UNCHANGED_ISSUE` or `INDETERMINATE`
+- Export side-by-side comparison evidence to JSON and CSV
 
-- A strict test-case schema
-- Three starter test cases
-- YAML loading with safe parsing
-- Clear validation errors
-- Automated unit tests
-
-## Why This Project Exists
-
-Manual AI security testing becomes difficult to reproduce when prompts, expected behavior and evidence are stored informally. This project turns those checks into structured test cases that can later be executed against vulnerable and hardened chatbot configurations.
-
-## Day 1 Architecture
+## Architecture
 
 ```text
 YAML Test Pack
       ↓
 Safe YAML Loader
       ↓
-Pydantic Schema Validation
+Schema Validation
       ↓
-Valid TestCase Objects
+Validated TestCase Objects
       ↓
-Ready for the future Test Runner
+Test Runner
+      ↓
+Provider Abstraction
+      ├── Baseline Configuration
+      └── Candidate Configuration
+      ↓
+Raw Execution Records
+      ↓
+Security Evaluators
+      ↓
+Evaluated Records
+      ├── Run Reports
+      └── Comparison Engine
+              ↓
+       Side-by-Side Outcomes
+              ↓
+       Comparison Artifacts
+       ├── comparison.json
+       ├── comparison.csv
+       └── comparison_summary.json
 ```
 
 ## Setup on Windows PowerShell
 
 ```powershell
-py --version
 py -m venv .venv
-.venv\Scripts\Activate.ps1
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+.\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ```
 
-If PowerShell blocks activation, use Command Prompt instead:
-
-```bat
-.venv\Scripts\activate.bat
-```
-
-## Validate the Starter Test Pack
+## Validate a Test Pack
 
 ```powershell
 validate-ai-tests test_packs/day1_test_cases.yaml
 ```
 
-Alternative command:
+## Run Raw Execution Only
 
 ```powershell
-python -m ai_red_teaming_harness.validate_cases test_packs/day1_test_cases.yaml
+run-ai-tests test_packs/day1_test_cases.yaml --provider mock-vulnerable
 ```
 
-Expected result:
+## Run Security Evaluation
+
+```powershell
+evaluate-ai-tests test_packs/day1_test_cases.yaml --provider mock-hardened
+```
+
+## Generate One-Provider Evidence Reports
+
+```powershell
+report-ai-tests test_packs/day1_test_cases.yaml --provider mock-vulnerable
+```
+
+## Compare Baseline and Candidate Configurations
+
+```powershell
+compare-ai-tests test_packs/day1_test_cases.yaml \
+  --baseline mock-vulnerable \
+  --candidate mock-hardened
+```
+
+PowerShell also accepts the command on one line:
+
+```powershell
+compare-ai-tests test_packs/day1_test_cases.yaml --baseline mock-vulnerable --candidate mock-hardened
+```
+
+Expected comparison:
 
 ```text
-Validated 3 test cases successfully.
+PL-001    FAIL → PASS    IMPROVED
+IO-001    FAIL → PASS    IMPROVED
+CTRL-001  PASS → PASS    UNCHANGED_PASS
 ```
+
+Generated structure:
+
+```text
+output/
+└── COMPARE-<timestamp>-<id>/
+    ├── comparison.json
+    ├── comparison.csv
+    └── comparison_summary.json
+```
+
+## Comparison Meaning
+
+- `IMPROVED`: candidate verdict is safer than baseline for the same test
+- `REGRESSED`: candidate verdict is worse than baseline
+- `UNCHANGED_PASS`: both configurations passed
+- `UNCHANGED_ISSUE`: both configurations produced the same non-pass verdict
+- `INDETERMINATE`: an execution/evaluation error prevents a reliable comparison
+
+The comparison describes only the configured test pack and evaluators. It does not prove that the candidate configuration is fully secure.
 
 ## Run Unit Tests
 
 ```powershell
-pytest
+python -m pytest
 ```
 
-## Starter Test Categories
+Expected after Day 5:
 
-1. Prompt leakage attack
-2. Instruction override attack
-3. Benign control
-
-## Important Security Principle
-
-A test harness does not prove that an AI system is fully secure. It produces repeatable evidence for the specific tests and evaluators that were defined.
+```text
+25 passed
+```
 
 ## Ethical Use
 
-This project is for safe local simulation, defensive testing, education and portfolio development. Do not use it against systems without explicit authorization.
+This project is intended for safe local simulation, defensive testing, education and authorized security assessment only.
