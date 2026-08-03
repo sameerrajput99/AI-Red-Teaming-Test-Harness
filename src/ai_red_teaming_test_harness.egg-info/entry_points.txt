@@ -1,0 +1,6 @@
+[console_scripts]
+compare-ai-tests = ai_red_teaming_harness.compare_cases:main
+evaluate-ai-tests = ai_red_teaming_harness.evaluate_cases:main
+report-ai-tests = ai_red_teaming_harness.report_cases:main
+run-ai-tests = ai_red_teaming_harness.run_cases:main
+validate-ai-tests = ai_red_teaming_harness.validate_cases:main
