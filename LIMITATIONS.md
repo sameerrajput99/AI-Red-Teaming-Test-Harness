@@ -116,4 +116,4 @@ Future improvements include:
 - Sanitised example evidence
 - Optional real-model adapters
 - Improved security reports
-- Automated GitHub testing
+- Expanded CI checks and test coverage reporting
