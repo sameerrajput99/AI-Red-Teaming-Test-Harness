@@ -140,7 +140,7 @@ The comparison describes only the configured test pack and evaluators. It does n
 python -m pytest
 ```
 
-Expected after Day 5:
+Expected current test result:
 
 ```text
 25 passed
