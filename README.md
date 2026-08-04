@@ -2,7 +2,7 @@
 
 A safe, local and reproducible Python framework for defining, executing, evaluating, reporting and comparing structured AI security tests.
 
-## Current Status: Day 5
+## Current Status: Working Local MVP
 
 The project can now:
 
@@ -14,6 +14,16 @@ The project can now:
 - Compare a baseline configuration with a candidate configuration test by test
 - Classify each change as `IMPROVED`, `REGRESSED`, `UNCHANGED_PASS`, `UNCHANGED_ISSUE` or `INDETERMINATE`
 - Export side-by-side comparison evidence to JSON and CSV
+
+## Current Limitations
+
+The current implementation uses deterministic local mock providers and a small starter test pack.
+
+Its evaluators rely on configured response checks and may produce false positives, false negatives or ambiguous results.
+
+A passing result applies only to the configured test case and evaluator rules. It does not prove that an AI system is fully secure.
+
+See [LIMITATIONS.md](LIMITATIONS.md) for complete scope and interpretation guidance.
 
 ## Architecture
 
@@ -135,6 +145,16 @@ Expected after Day 5:
 ```text
 25 passed
 ```
+## Current Development Focus
+
+The next development phase includes:
+
+- Expanding the structured test library
+- Adding prompt-injection and refusal-behaviour scenarios
+- Analysing false positives and ambiguous responses
+- Publishing sanitised example evidence
+- Improving repeated-run evaluation
+- Preparing a short terminal demonstration
 
 ## Ethical Use
 
