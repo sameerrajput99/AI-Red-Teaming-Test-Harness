@@ -1,162 +1,142 @@
 # AI Red Teaming Test Harness
 
-A safe, local and reproducible Python framework for defining, executing, evaluating, reporting and comparing structured AI security tests.
+A safe, local and reproducible Python framework for defining, executing, evaluating, reporting, comparing and gating structured AI security tests.
 
-## Current Status: Working Local MVP
+## Current Status: Day 8
 
-The project can now:
+The project now includes an expanded deterministic security test pack covering:
 
-- Validate structured YAML test packs
-- Execute the same tests against mock vulnerable and hardened configurations
-- Capture raw prompts, responses, errors, latency and timestamps
-- Evaluate responses as `PASS`, `FAIL`, `REVIEW` or `ERROR`
-- Export full evidence to JSON, flat CSV and compact summary JSON
-- Compare a baseline configuration with a candidate configuration test by test
-- Classify each change as `IMPROVED`, `REGRESSED`, `UNCHANGED_PASS`, `UNCHANGED_ISSUE` or `INDETERMINATE`
-- Export side-by-side comparison evidence to JSON and CSV
+- Prompt leakage
+- Prompt injection
+- Instruction override
+- Refusal behavior
+- Hallucination indicators
+- Safety boundaries
+- Benign usability controls
 
-## Current Limitations
-
-The current implementation uses deterministic local mock providers and a small starter test pack.
-
-Its evaluators rely on configured response checks and may produce false positives, false negatives or ambiguous results.
-
-A passing result applies only to the configured test case and evaluator rules. It does not prove that an AI system is fully secure.
-
-See [LIMITATIONS.md](LIMITATIONS.md) for complete scope and interpretation guidance.
-
-## Architecture
+The Day 8 pack contains **14 tests**:
 
 ```text
-YAML Test Pack
-      ↓
-Safe YAML Loader
-      ↓
-Schema Validation
-      ↓
-Validated TestCase Objects
-      ↓
-Test Runner
-      ↓
-Provider Abstraction
-      ├── Baseline Configuration
-      └── Candidate Configuration
-      ↓
-Raw Execution Records
-      ↓
-Security Evaluators
-      ↓
-Evaluated Records
-      ├── Run Reports
-      └── Comparison Engine
-              ↓
-       Side-by-Side Outcomes
-              ↓
-       Comparison Artifacts
-       ├── comparison.json
-       ├── comparison.csv
-       └── comparison_summary.json
+12 adversarial tests
+2 benign controls
 ```
 
-## Setup on Windows PowerShell
+The mock vulnerable and hardened providers were expanded so the same test pack produces deterministic before-and-after evidence.
+
+## Day 8 Expanded Pack
+
+Validate:
 
 ```powershell
-py -m venv .venv
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
+validate-ai-tests test_packs/day8_expanded_security_pack.yaml
 ```
 
-## Validate a Test Pack
+Evaluate vulnerable baseline:
 
 ```powershell
-validate-ai-tests test_packs/day1_test_cases.yaml
+evaluate-ai-tests test_packs/day8_expanded_security_pack.yaml --provider mock-vulnerable
 ```
 
-## Run Raw Execution Only
-
-```powershell
-run-ai-tests test_packs/day1_test_cases.yaml --provider mock-vulnerable
-```
-
-## Run Security Evaluation
-
-```powershell
-evaluate-ai-tests test_packs/day1_test_cases.yaml --provider mock-hardened
-```
-
-## Generate One-Provider Evidence Reports
-
-```powershell
-report-ai-tests test_packs/day1_test_cases.yaml --provider mock-vulnerable
-```
-
-## Compare Baseline and Candidate Configurations
-
-```powershell
-compare-ai-tests test_packs/day1_test_cases.yaml \
-  --baseline mock-vulnerable \
-  --candidate mock-hardened
-```
-
-PowerShell also accepts the command on one line:
-
-```powershell
-compare-ai-tests test_packs/day1_test_cases.yaml --baseline mock-vulnerable --candidate mock-hardened
-```
-
-Expected comparison:
+Expected:
 
 ```text
-PL-001    FAIL → PASS    IMPROVED
-IO-001    FAIL → PASS    IMPROVED
-CTRL-001  PASS → PASS    UNCHANGED_PASS
+PASS=2
+FAIL=12
+REVIEW=0
+ERROR=0
 ```
 
-Generated structure:
+Evaluate hardened candidate:
+
+```powershell
+evaluate-ai-tests test_packs/day8_expanded_security_pack.yaml --provider mock-hardened
+```
+
+Expected:
 
 ```text
-output/
-└── COMPARE-<timestamp>-<id>/
-    ├── comparison.json
-    ├── comparison.csv
-    └── comparison_summary.json
+PASS=14
+FAIL=0
+REVIEW=0
+ERROR=0
 ```
 
-## Comparison Meaning
+Compare:
 
-- `IMPROVED`: candidate verdict is safer than baseline for the same test
-- `REGRESSED`: candidate verdict is worse than baseline
-- `UNCHANGED_PASS`: both configurations passed
-- `UNCHANGED_ISSUE`: both configurations produced the same non-pass verdict
-- `INDETERMINATE`: an execution/evaluation error prevents a reliable comparison
+```powershell
+compare-ai-tests test_packs/day8_expanded_security_pack.yaml --baseline mock-vulnerable --candidate mock-hardened
+```
 
-The comparison describes only the configured test pack and evaluators. It does not prove that the candidate configuration is fully secure.
+Expected:
 
-## Run Unit Tests
+```text
+IMPROVED=12
+REGRESSED=0
+UNCHANGED_PASS=2
+UNCHANGED_ISSUE=0
+INDETERMINATE=0
+```
+
+Run the strict policy gate:
+
+```powershell
+gate-ai-tests test_packs/day8_expanded_security_pack.yaml --policy policies/strict_gate.yaml --baseline mock-vulnerable --candidate mock-hardened
+```
+
+Expected:
+
+```text
+Gate status: PASSED
+```
+
+## Security Coverage
+
+| Category | Tests | Purpose |
+|---|---:|---|
+| Prompt leakage | 2 | Protect hidden system/developer instructions |
+| Prompt injection | 2 | Resist user/document attempts to replace instruction hierarchy |
+| Instruction override | 2 | Resist debug/maintenance-mode override attempts |
+| Refusal behavior | 2 | Refuse requests for protected credentials/tokens |
+| Hallucination | 2 | Avoid configured fabricated citation/claim markers |
+| Safety boundary | 2 | Resist authorization/access-control bypass requests |
+| Benign control | 2 | Preserve normal educational/helpful behavior |
+
+## Important Day 8 Limitation
+
+Day 8 expands **test breadth**, not evaluator sophistication.
+
+The current deterministic evaluators still rely on:
+
+- Forbidden patterns
+- Refusal signals
+- Response presence
+
+More advanced response evaluation is intentionally reserved for a later phase. The Day 8 results therefore describe only these configured test cases and deterministic checks.
+
+## Security Gate and CI
+
+The GitHub Actions workflow now runs the strict gate against the expanded Day 8 pack:
+
+```text
+.github/workflows/ai-security-gate.yml
+```
+
+It requires no API key because both providers are local simulations.
+
+## Run All Unit Tests
 
 ```powershell
 python -m pytest
 ```
 
-Expected current test result:
+Expected after Day 8:
 
 ```text
-25 passed
-
+43 passed
 ```
-## Current Development Focus
-
-The next development phase includes:
-
-- Expanding the structured test library
-- Adding prompt-injection and refusal-behaviour scenarios
-- Analysing false positives and ambiguous responses
-- Publishing sanitised example evidence
-- Improving repeated-run evaluation
-- Preparing a short terminal demonstration
 
 ## Ethical Use
 
-This project is intended for safe local simulation, defensive testing, education and authorized security assessment only.
+The prompts use safe local simulations and fake placeholder secrets only. This project is for defensive testing, education and authorized assessment.
+
+Passing the expanded pack or policy gate is not a complete security certification.
