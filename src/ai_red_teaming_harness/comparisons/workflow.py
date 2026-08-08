@@ -1,4 +1,4 @@
-"""High-level workflow for generating Day 5 comparison artifacts."""
+"High-level workflow for generating comparison artifacts."
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from pathlib import Path
 from ..models import ComparisonRecord, ComparisonSummary, EvaluatedRecord, TestPack
 from .csv_reporter import ComparisonCsvWriter
 from .engine import compare_evaluated_records
+from .html_reporter import ComparisonHtmlWriter
 from .json_reporter import ComparisonJsonWriter
 from .summary import build_comparison_summary
 from .summary_reporter import ComparisonSummaryWriter
@@ -21,6 +22,7 @@ class ComparisonArtifacts:
     json_report: Path
     csv_report: Path
     summary_report: Path
+    html_report: Path
     records: list[ComparisonRecord]
     summary: ComparisonSummary
 
@@ -31,7 +33,7 @@ def generate_comparison_artifacts(
     candidate_records: list[EvaluatedRecord],
     output_root: str | Path = "output",
 ) -> ComparisonArtifacts:
-    """Compare two evaluated runs and persist three side-by-side artifacts."""
+    """Compare two evaluated runs and persist four side-by-side artifacts."""
 
     records = compare_evaluated_records(
         test_pack,
@@ -56,12 +58,19 @@ def generate_comparison_artifacts(
         output_directory / "comparison_summary.json",
         summary,
     )
+    html_path = ComparisonHtmlWriter().write(
+        output_directory / "comparison.html",
+        test_pack,
+        records,
+        summary,
+    )
 
     return ComparisonArtifacts(
         output_directory=output_directory,
         json_report=json_path,
         csv_report=csv_path,
         summary_report=summary_path,
+        html_report=html_path,
         records=records,
         summary=summary,
     )

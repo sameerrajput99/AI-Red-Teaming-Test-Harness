@@ -1,4 +1,4 @@
-"""Command-line workflow for generating structured AI security evidence files."""
+"Command-line workflow for generating structured AI security evidence files."
 
 from __future__ import annotations
 
@@ -46,6 +46,7 @@ def render_artifacts(artifacts: ReportArtifacts) -> None:
     table.add_row("Full JSON", str(artifacts.json_report))
     table.add_row("Flat CSV", str(artifacts.csv_report))
     table.add_row("Summary JSON", str(artifacts.summary_report))
+    table.add_row("HTML Report", str(artifacts.html_report))
     console.print(table)
     console.print(
         "[bold]Run summary:[/bold] "

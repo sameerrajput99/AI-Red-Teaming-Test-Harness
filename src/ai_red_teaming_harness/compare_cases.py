@@ -1,4 +1,4 @@
-"""Command-line baseline-versus-candidate security comparison."""
+"Command-line baseline-versus-candidate security comparison."
 
 from __future__ import annotations
 
@@ -89,6 +89,7 @@ def render_comparison(artifacts: ComparisonArtifacts) -> None:
     files.add_row("Comparison JSON", str(artifacts.json_report))
     files.add_row("Comparison CSV", str(artifacts.csv_report))
     files.add_row("Comparison Summary", str(artifacts.summary_report))
+    files.add_row("HTML Report", str(artifacts.html_report))
     console.print(files)
     console.print(
         "[yellow]An improved result applies only to the configured test pack and "
