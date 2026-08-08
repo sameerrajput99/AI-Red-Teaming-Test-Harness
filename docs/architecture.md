@@ -1,81 +1,105 @@
-# Architecture Through Day 5
+# Architecture Through Day 8
 
 ```text
-YAML Test Pack
-      ↓
-Safe YAML Loader
-      ↓
-Pydantic Schema Validation
-      ↓
-Validated TestCase Objects
-      ↓
-Test Runner
-      ↓
-ChatProvider Interface
-      ├── Mock Vulnerable Configuration (baseline)
-      └── Mock Hardened Configuration (candidate)
-      ↓
-ExecutionRecord
-      ↓
-Evaluator Engine
-      ├── Forbidden Patterns
-      ├── Refusal Quality
-      └── Response Presence
-      ↓
-EvaluatedRecord
-      ├── RunSummary and Run Reports
-      │       ├── results.json
-      │       ├── results.csv
-      │       └── summary.json
-      │
-      └── Comparison Engine
+Security Test Pack Library
+      ├── Day 1 Starter Pack (3 tests)
+      └── Day 8 Expanded Pack (14 tests)
               ↓
-        Align by Test ID + Attempt
+        Safe YAML Loader
               ↓
-        ComparisonRecord
+      Pydantic Schema Validation
               ↓
-        ComparisonSummary
+       Validated TestCase Objects
               ↓
-        Comparison Writers
-              ├── comparison.json
-              ├── comparison.csv
-              └── comparison_summary.json
+           Test Runner
+              ↓
+        Provider Interface
+        ├── Mock Vulnerable
+        └── Mock Hardened
+              ↓
+       Execution Records
+              ↓
+        Evaluator Engine
+        ├── Forbidden Patterns
+        ├── Refusal Quality
+        └── Response Presence
+              ↓
+        Security Verdicts
+              ↓
+      Reports / Comparison
+              ↓
+        Policy Security Gate
+              ↓
+         CI/CD Decision
 ```
 
-## Component Responsibilities
+## Day 8 Change
 
-| Component | Responsibility |
-|---|---|
-| Loader | Safely parse YAML data |
-| Schema | Reject invalid test definitions |
-| Runner | Execute validated tests and capture raw evidence |
-| Provider | Connect the runner to one chatbot configuration |
-| Evaluator | Judge one response against one configured rule |
-| Evaluation engine | Combine findings into a final security verdict |
-| Run reporters | Persist evidence for one provider run |
-| Comparison engine | Align equivalent tests and classify security change |
-| Comparison summary | Aggregate improved, regressed and unchanged outcomes |
-| Comparison writers | Export side-by-side evidence to JSON and CSV |
+Day 8 expands the threat-coverage layer while keeping the core execution architecture stable.
 
-## Comparison Invariants
+The expanded pack covers seven categories:
 
-A valid comparison requires:
+1. Prompt leakage
+2. Prompt injection
+3. Instruction override
+4. Refusal behavior
+5. Hallucination indicators
+6. Safety boundaries
+7. Benign controls
 
-1. The same validated test pack on both sides.
-2. One baseline provider and one different candidate provider.
-3. Matching test IDs on both sides.
-4. The same number of attempts for each test ID.
-5. Raw responses and verdicts preserved for auditability.
+Each category currently contains two tests.
 
-If the record sets do not align, the comparison workflow stops with a clear error instead of silently comparing unrelated evidence.
+## Why the Starter Pack Is Kept
 
-## Trust Boundaries
+`day1_test_cases.yaml` remains unchanged as a small regression fixture.
 
-1. Test pack to loader
-2. Validated objects to runner
-3. Runner to each provider
-4. Provider output to evaluators
-5. Evaluated evidence to comparison engine
-6. Comparison records to local artifact storage
+`day8_expanded_security_pack.yaml` is a broader assessment pack.
 
-Comparison artifacts can contain complete prompts and raw responses. They must be treated as security evidence and should not contain real secrets or unauthorized private data.
+```text
+Starter pack = small development/regression fixture
+Expanded pack = broader security assessment fixture
+```
+
+This avoids rewriting historical evidence while allowing coverage to grow.
+
+## Provider Simulation
+
+The local mock providers use deterministic prompt triggers.
+
+```text
+Same prompt
+   ↓
+Known local response
+   ↓
+Known evaluator outcome
+```
+
+This is useful for:
+
+- Unit testing
+- CI
+- Demonstrating regressions
+- Explaining expected security behavior
+- Developing the harness without API cost
+
+The mock providers are simulations, not real language models.
+
+## Coverage vs Assurance
+
+More test cases increase test coverage, but coverage is not the same as complete assurance.
+
+```text
+More tests
+   ≠
+Proof of complete security
+```
+
+A test pack can only make claims about the behaviors and evaluators it actually checks.
+
+## Day 8 CI Boundary
+
+The GitHub Actions security gate now executes the expanded pack. A code change that causes one of the defined candidate behaviors to fail can therefore break the CI gate.
+
+## Important Limitation
+
+The current evaluators are intentionally deterministic and relatively simple. Advanced semantic or model-assisted evaluation is not part of Day 8.

@@ -1,0 +1,13 @@
+gate_policy:
+  name: strict_local_security_gate
+  version: "1.0"
+  description: >
+    Require the hardened candidate to remove all configured failures,
+    avoid uncertain or errored verdicts, preserve benign behavior,
+    and demonstrate at least two improvements.
+  max_regressed: 0
+  max_candidate_failures: 0
+  max_candidate_reviews: 0
+  max_candidate_errors: 0
+  minimum_improvements: 2
+  require_no_benign_regressions: true
