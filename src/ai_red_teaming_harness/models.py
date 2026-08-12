@@ -5,14 +5,12 @@ from __future__ import annotations
 import re
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class Category(str, Enum):
-    """Security categories supported by the starter schema."""
-
     PROMPT_LEAKAGE = "prompt_leakage"
     PROMPT_INJECTION = "prompt_injection"
     INSTRUCTION_OVERRIDE = "instruction_override"
@@ -23,15 +21,11 @@ class Category(str, Enum):
 
 
 class ControlType(str, Enum):
-    """Whether a test is hostile or a normal usability control."""
-
     ADVERSARIAL = "adversarial"
     BENIGN = "benign"
 
 
 class Severity(str, Enum):
-    """Potential impact if the defined security behavior fails."""
-
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -40,15 +34,11 @@ class Severity(str, Enum):
 
 
 class ExecutionStatus(str, Enum):
-    """Whether the provider call itself completed successfully."""
-
     SUCCESS = "success"
     ERROR = "error"
 
 
 class EvaluationVerdict(str, Enum):
-    """Security decision produced by response evaluators."""
-
     PASS = "PASS"
     FAIL = "FAIL"
     REVIEW = "REVIEW"
@@ -56,23 +46,41 @@ class EvaluationVerdict(str, Enum):
 
 
 class EvaluatorConfig(BaseModel):
-    """Configuration for an evaluator that will be implemented later."""
+    """Configuration shared by simple and advanced deterministic evaluators."""
 
     model_config = ConfigDict(extra="forbid")
 
     type: str = Field(min_length=2, max_length=80)
     values: list[str] = Field(default_factory=list)
+
+    # Existing Day 3 field.
     minimum_refusal_signals: int | None = Field(default=None, ge=0, le=10)
+
+    # Day 10 advanced configuration.
+    match_mode: Literal["any", "all"] = "any"
+    case_sensitive: bool = False
+    minimum_response_chars: int | None = Field(default=None, ge=1, le=20_000)
+    maximum_response_chars: int | None = Field(default=None, ge=1, le=20_000)
 
     @field_validator("type")
     @classmethod
     def normalize_type(cls, value: str) -> str:
         return value.strip().lower()
 
+    @model_validator(mode="after")
+    def validate_response_length_bounds(self) -> "EvaluatorConfig":
+        if (
+            self.minimum_response_chars is not None
+            and self.maximum_response_chars is not None
+            and self.minimum_response_chars > self.maximum_response_chars
+        ):
+            raise ValueError(
+                "minimum_response_chars must be less than or equal to maximum_response_chars"
+            )
+        return self
+
 
 class TestCase(BaseModel):
-    """Contract that every AI security test case must satisfy."""
-
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     id: str = Field(min_length=5, max_length=30)
@@ -123,8 +131,6 @@ class TestCase(BaseModel):
 
 
 class TestPackMetadata(BaseModel):
-    """Human-readable metadata for a collection of tests."""
-
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     name: str = Field(min_length=3, max_length=120)
@@ -133,8 +139,6 @@ class TestPackMetadata(BaseModel):
 
 
 class TestPack(BaseModel):
-    """A validated collection of test cases."""
-
     model_config = ConfigDict(extra="forbid")
 
     test_pack: TestPackMetadata
@@ -149,8 +153,6 @@ class TestPack(BaseModel):
 
 
 class ProviderResponse(BaseModel):
-    """Raw response returned by a chatbot provider adapter."""
-
     model_config = ConfigDict(extra="forbid")
 
     text: str = Field(min_length=1, max_length=20_000)
@@ -158,8 +160,6 @@ class ProviderResponse(BaseModel):
 
 
 class ExecutionRecord(BaseModel):
-    """Raw evidence captured when one test case is sent to one provider."""
-
     model_config = ConfigDict(extra="forbid")
 
     run_id: str = Field(min_length=8, max_length=80)
@@ -188,8 +188,6 @@ class ExecutionRecord(BaseModel):
 
 
 class EvaluationFinding(BaseModel):
-    """One evaluator's structured decision and supporting reason."""
-
     model_config = ConfigDict(extra="forbid")
 
     evaluator_type: str = Field(min_length=2, max_length=80)
@@ -199,8 +197,6 @@ class EvaluationFinding(BaseModel):
 
 
 class EvaluatedRecord(BaseModel):
-    """Raw execution evidence plus the final composite security verdict."""
-
     model_config = ConfigDict(extra="forbid")
 
     execution: ExecutionRecord
@@ -210,8 +206,6 @@ class EvaluatedRecord(BaseModel):
 
 
 class RunSummary(BaseModel):
-    """Validated run-level metrics used by evidence reporters."""
-
     model_config = ConfigDict(extra="forbid")
 
     run_id: str = Field(min_length=8, max_length=80)
@@ -228,20 +222,13 @@ class RunSummary(BaseModel):
 
     @model_validator(mode="after")
     def validate_verdict_total(self) -> "RunSummary":
-        counted = (
-            self.pass_count
-            + self.fail_count
-            + self.review_count
-            + self.error_count
-        )
+        counted = self.pass_count + self.fail_count + self.review_count + self.error_count
         if counted != self.total_tests:
             raise ValueError("verdict counts must equal total_tests")
         return self
 
 
 class ComparisonOutcome(str, Enum):
-    """How the candidate verdict changed relative to the baseline."""
-
     IMPROVED = "IMPROVED"
     REGRESSED = "REGRESSED"
     UNCHANGED_PASS = "UNCHANGED_PASS"
@@ -250,8 +237,6 @@ class ComparisonOutcome(str, Enum):
 
 
 class ComparisonRecord(BaseModel):
-    """Side-by-side evidence for one test attempt across two providers."""
-
     model_config = ConfigDict(extra="forbid")
 
     test_id: str = Field(min_length=5, max_length=30)
@@ -273,8 +258,6 @@ class ComparisonRecord(BaseModel):
 
 
 class ComparisonSummary(BaseModel):
-    """Aggregated metrics for one baseline-versus-candidate comparison."""
-
     model_config = ConfigDict(extra="forbid")
 
     comparison_id: str = Field(min_length=12, max_length=90)
