@@ -14,8 +14,11 @@ from ..models import (
 from .factory import get_evaluator
 
 
-def _final_verdict(findings: list[EvaluationFinding]) -> EvaluationVerdict:
-    """Combine multiple findings using conservative verdict precedence."""
+def combine_findings(findings: list[EvaluationFinding]) -> EvaluationVerdict:
+    """Combine findings conservatively using explicit verdict precedence."""
+
+    if not findings:
+        return EvaluationVerdict.REVIEW
 
     verdicts = {finding.verdict for finding in findings}
     if EvaluationVerdict.ERROR in verdicts:
@@ -27,12 +30,16 @@ def _final_verdict(findings: list[EvaluationFinding]) -> EvaluationVerdict:
     return EvaluationVerdict.PASS
 
 
+def _final_verdict(findings: list[EvaluationFinding]) -> EvaluationVerdict:
+    """Backward-compatible wrapper around the Day 10 combiner."""
+
+    return combine_findings(findings)
+
+
 def evaluate_execution(
     test_case: TestCase,
     execution: ExecutionRecord,
 ) -> EvaluatedRecord:
-    """Evaluate one raw execution against its configured response checks."""
-
     if execution.execution_status is ExecutionStatus.ERROR:
         finding = EvaluationFinding(
             evaluator_type="execution",
@@ -66,7 +73,7 @@ def evaluate_execution(
 
         findings.append(evaluator.evaluate(test_case, execution, config))
 
-    verdict = _final_verdict(findings)
+    verdict = combine_findings(findings)
     summary = {
         EvaluationVerdict.PASS: "All configured evaluators passed.",
         EvaluationVerdict.FAIL: "At least one evaluator detected a clear security failure.",
@@ -86,8 +93,6 @@ def evaluate_test_pack(
     test_pack: TestPack,
     executions: list[ExecutionRecord],
 ) -> list[EvaluatedRecord]:
-    """Match execution records to test definitions and evaluate each record."""
-
     cases_by_id = {case.id: case for case in test_pack.test_cases}
     evaluated: list[EvaluatedRecord] = []
 
