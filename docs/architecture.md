@@ -1,105 +1,105 @@
-# Architecture Through Day 8
+# Architecture Through Day 11
 
 ```text
-Security Test Pack Library
-      ├── Day 1 Starter Pack (3 tests)
-      └── Day 8 Expanded Pack (14 tests)
-              ↓
-        Safe YAML Loader
-              ↓
-      Pydantic Schema Validation
-              ↓
-       Validated TestCase Objects
-              ↓
-           Test Runner
-              ↓
-        Provider Interface
-        ├── Mock Vulnerable
-        └── Mock Hardened
-              ↓
-       Execution Records
-              ↓
-        Evaluator Engine
-        ├── Forbidden Patterns
-        ├── Refusal Quality
-        └── Response Presence
-              ↓
-        Security Verdicts
-              ↓
-      Reports / Comparison
-              ↓
-        Policy Security Gate
-              ↓
-         CI/CD Decision
-```
-
-## Day 8 Change
-
-Day 8 expands the threat-coverage layer while keeping the core execution architecture stable.
-
-The expanded pack covers seven categories:
-
-1. Prompt leakage
-2. Prompt injection
-3. Instruction override
-4. Refusal behavior
-5. Hallucination indicators
-6. Safety boundaries
-7. Benign controls
-
-Each category currently contains two tests.
-
-## Why the Starter Pack Is Kept
-
-`day1_test_cases.yaml` remains unchanged as a small regression fixture.
-
-`day8_expanded_security_pack.yaml` is a broader assessment pack.
-
-```text
-Starter pack = small development/regression fixture
-Expanded pack = broader security assessment fixture
-```
-
-This avoids rewriting historical evidence while allowing coverage to grow.
-
-## Provider Simulation
-
-The local mock providers use deterministic prompt triggers.
-
-```text
-Same prompt
+Test Pack
    ↓
-Known local response
+TestCase.repetitions
    ↓
-Known evaluator outcome
+Runner
+   ↓
+Repeated Execution Records
+   ↓
+Evaluators
+   ↓
+Repeated Evaluated Records
+   ↓
+Stability Analyzer
+   ├── PASS count
+   ├── FAIL count
+   ├── REVIEW count
+   ├── ERROR count
+   ├── Pass rate
+   └── Stability status
+          ↓
+   STABLE_PASS
+   STABLE_FAIL
+   STABLE_REVIEW
+   STABLE_ERROR
+   FLAKY
+          ↓
+Stability Reports
+   ├── stability.json
+   ├── stability.csv
+   └── stability_summary.json
 ```
 
-This is useful for:
+## Existing Repetition Support
 
-- Unit testing
-- CI
-- Demonstrating regressions
-- Explaining expected security behavior
-- Developing the harness without API cost
+The runner already executes each test according to its `repetitions` value.
 
-The mock providers are simulations, not real language models.
+Day 11 does not invent repeated execution from scratch. It adds an analysis layer that makes those repetitions meaningful.
 
-## Coverage vs Assurance
-
-More test cases increase test coverage, but coverage is not the same as complete assurance.
+## Stability Rule
 
 ```text
-More tests
-   ≠
-Proof of complete security
+One unique verdict across all attempts
+→ stable
+
+More than one unique verdict
+→ flaky
 ```
 
-A test pack can only make claims about the behaviors and evaluators it actually checks.
+Examples:
 
-## Day 8 CI Boundary
+```text
+PASS PASS PASS PASS
+→ STABLE_PASS
 
-The GitHub Actions security gate now executes the expanded pack. A code change that causes one of the defined candidate behaviors to fail can therefore break the CI gate.
+FAIL FAIL FAIL FAIL
+→ STABLE_FAIL
+
+PASS FAIL PASS FAIL
+→ FLAKY
+```
+
+## Pass Rate
+
+```text
+pass_rate = PASS attempts / total attempts × 100
+```
+
+Pass rate and stability are related but different.
+
+```text
+100% + stable
+→ STABLE_PASS
+
+0% + stable
+→ STABLE_FAIL
+
+50% + mixed verdicts
+→ FLAKY
+```
+
+## Why Mock Flaky Exists
+
+`mock-flaky` is a local teaching provider.
+
+It alternates one repeated attack between:
+
+```text
+unsafe leak
+safe refusal
+unsafe leak
+safe refusal
+```
+
+This makes flakiness reproducible for unit tests and demos.
+
+It is not presented as a real production model.
 
 ## Important Limitation
 
-The current evaluators are intentionally deterministic and relatively simple. Advanced semantic or model-assisted evaluation is not part of Day 8.
+Stability metrics describe only the observed repeated attempts.
+
+They are not a probability guarantee about all future model behavior.
