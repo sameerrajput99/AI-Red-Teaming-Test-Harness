@@ -1,119 +1,131 @@
 # Limitations
 
-The AI Red Teaming Test Harness is an educational and defensive security-testing project.
+The AI Red Teaming Test Harness is an educational, defensive security-testing
+project. Its results apply only to the configured test packs, providers,
+evaluators, scoring rules, and execution environment used for a run.
 
-Its results must be interpreted only within the scope of the configured test cases, mock providers and evaluator rules.
+## Provider Scope
 
-## Current Provider Scope
-
-The current implementation uses two deterministic local mock providers:
+The harness currently supports four provider names:
 
 - `mock-vulnerable`
 - `mock-hardened`
+- `mock-flaky`
+- `openai-live`
 
-These providers simulate vulnerable and hardened chatbot behaviour.
+The three mock providers are deterministic local simulations. They are useful
+for repeatable regression tests, but they do not reproduce the full variability
+of production language models.
 
-They are not real production language models and do not represent the full variability of deployed LLM systems.
+The optional `openai-live` adapter depends on the configured model, account
+access, network availability, provider-side policy, rate limits, and model
+updates. Its responses can be non-deterministic and may change without a code
+change in this repository.
 
-## Current Test Coverage
+## Test-Coverage Scope
 
-The current starter test pack contains:
+The included test packs cover configured examples of:
 
-- Direct system-prompt leakage
-- Direct instruction override
-- One benign usability control
-
-Additional categories are planned, including:
-
+- Prompt leakage
 - Prompt injection
+- Instruction override
 - Refusal behaviour
 - Hallucination
-- Safety-boundary testing
+- Safety-boundary behaviour
+- Benign controls
+- Repeated-run stability
+- Risk-scoring scenarios
 
-These categories should not be treated as fully implemented until corresponding test cases and evaluators are added.
+This coverage is not exhaustive. Passing the included cases does not prove that
+an AI system is secure against every prompt, language, encoding, multi-turn
+strategy, tool call, retrieval source, or model update.
 
 ## Evaluator Limitations
 
-The current evaluators use checks such as:
+The automated evaluators use deterministic checks such as forbidden patterns,
+required patterns, regular expressions, response presence, response length,
+and refusal-quality signals.
 
-- Forbidden-pattern detection
-- Refusal-signal detection
-- Response-presence validation
+They can miss semantic or context-dependent failures, including:
 
-These evaluators may miss:
-
-- Semantic leakage
-- Indirect disclosures
-- Context-dependent unsafe behaviour
+- Indirect or paraphrased leakage
 - Subtle policy violations
 - Incorrect but convincing responses
+- Multi-turn attacks
+- Tool-use or retrieval-layer failures
+- Unsafe meaning that does not match a configured pattern
 
-They may also produce false positives when safe responses contain words similar to configured failure patterns.
+They can also produce false positives. A `REVIEW` verdict means the configured
+automation could not make a reliable decision and human review is required.
 
-## Verdict Interpretation
+## Stability and Risk Limitations
 
-The harness currently uses:
+Stability results describe only the configured number of repeated attempts.
+A stable pass over a small sample is not proof that a provider will always
+behave safely.
 
-- `PASS`
-- `FAIL`
-- `REVIEW`
-- `ERROR`
+Risk scores are project-specific prioritization values derived from configured
+severity, observed issue rate, and stability. They are not CVSS scores and
+should not be presented as an industry-standard vulnerability rating.
 
-A `PASS` means the response passed the configured checks for that test.
+## Findings and Assessment Limitations
 
-It does not prove that the AI system is completely secure.
+Normalized findings and assessment posture summarize observed non-zero risks
+from one configured run. `NO_OBSERVED_FINDINGS` means that no qualifying
+finding was produced within that scope. It does not mean that the model or
+application is vulnerability-free.
 
-A `REVIEW` result means automated checks could not reach a reliable conclusion and human review is required.
+The generated assessment is evidence for review, not a penetration-test
+certificate, compliance attestation, or complete security certification.
 
-An `ERROR` means execution or evaluation failed.
+## Sanitization and Data Handling
 
-## Comparison Limitations
+The final assessment exporter creates a sanitized copy and does not export full
+raw prompts or provider responses in the assessment artifacts. It also applies
+HTML escaping to untrusted report text.
 
-The comparison results apply only to:
+Sanitization is regex-based defense in depth. A sensitive value that does not
+match a configured rule can still be missed. Earlier execution and diagnostic
+artifacts may contain more detailed prompts or responses than the final
+assessment report.
 
-- The same configured test pack
-- The selected mock providers
-- The current evaluator rules
+Therefore:
 
-An `IMPROVED` result does not mean the hardened configuration is fully secure.
+- Use only fictional, public, or explicitly authorized test data.
+- Never place real credentials, secrets, or customer data in test packs.
+- Keep generated `output/` artifacts out of Git by default.
+- Review every artifact before external sharing.
+- Store real API keys only in local environment configuration, never in source
+  files or screenshots.
 
-It only means its result was safer than the baseline result for the same configured test.
+## End-to-End Verification Boundary
 
-## Data Handling
+The Day 16 E2E workflow verifies that the configured loader, provider,
+evaluator, stability, risk, findings, assessment, and sanitization components
+work together and produce the expected safe artifact set.
 
-Generated evidence may contain complete prompts and raw responses.
+A passing E2E run verifies those local pipeline contracts. It does not prove
+that every external provider, production deployment, attack technique, or
+future model version will behave safely.
 
-Only fictional, public or explicitly authorised data should be used.
+## Authorized Use Only
 
-Do not include:
+This project does not authorize:
 
-- Passwords
-- API keys
-- Private customer data
-- Real credentials
-- Unauthorised third-party information
-
-## Out of Scope
-
-This project does not authorise:
-
-- Testing third-party systems without permission
+- Testing third-party systems without explicit permission
 - Credential extraction
-- Malware execution
-- Real customer-data exposure
-- Automated exploitation
-- Complete security certification
-- Claims of 100% prompt-injection protection
+- Malware delivery or execution
+- Exposure of real customer or employee data
+- Automated exploitation of production systems
+- Claims of complete or guaranteed AI security
 
-## Planned Improvements
+## Future Improvements
 
-Future improvements include:
+Useful next improvements include:
 
-- More structured adversarial test cases
-- Additional evaluator types
-- False-positive analysis
-- Repeated test runs
-- Sanitised example evidence
-- Optional real-model adapters
-- Improved security reports
-- Expanded CI checks and test coverage reporting
+- Calibrated semantic evaluators with explicit human-review fallbacks
+- More multi-turn, multilingual, retrieval, and tool-use test scenarios
+- Additional provider adapters with timeout and rate-limit telemetry
+- Coverage reporting and static-analysis checks in CI
+- Versioned test-pack and artifact schemas
+- Signed or checksummed assessment manifests for stronger evidence integrity
