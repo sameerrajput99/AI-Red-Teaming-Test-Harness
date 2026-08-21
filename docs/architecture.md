@@ -1,105 +1,79 @@
-# Architecture Through Day 11
+# Architecture Through Day 16
 
 ```text
-Test Pack
-   ↓
-TestCase.repetitions
-   ↓
-Runner
-   ↓
-Repeated Execution Records
-   ↓
-Evaluators
-   ↓
-Repeated Evaluated Records
-   ↓
-Stability Analyzer
-   ├── PASS count
-   ├── FAIL count
-   ├── REVIEW count
-   ├── ERROR count
-   ├── Pass rate
-   └── Stability status
-          ↓
-   STABLE_PASS
-   STABLE_FAIL
-   STABLE_REVIEW
-   STABLE_ERROR
-   FLAKY
-          ↓
-Stability Reports
-   ├── stability.json
-   ├── stability.csv
-   └── stability_summary.json
+Structured Test Pack
+        ↓
+Provider Execution
+        ↓
+Deterministic Evaluators
+        ↓
+Stability Analysis
+        ↓
+Risk Scoring
+        ↓
+Normalized Findings
+        ↓
+Assessment Builder
+        ↓
+Assessment Report (in memory)
+        ↓
+Sanitization Layer
+        ├── API-key redaction
+        ├── bearer-token redaction
+        ├── generic secret redaction
+        └── email redaction
+        ↓
+Sanitized Assessment Copy
+        ↓
+Safe Export
+        ├── assessment_report.json
+        ├── assessment_report.md
+        ├── assessment_report.html
+        └── sanitization_summary.json
+        ↓
+End-to-End Verification Manifest
+        └── e2e_manifest.json
 ```
 
-## Existing Repetition Support
+## Day 16 Orchestration Boundary
 
-The runner already executes each test according to its `repetitions` value.
+The `e2e` workflow invokes each existing production component once and preserves the intermediate typed results for integration assertions. It does not reimplement evaluator, stability, risk, finding, assessment, or sanitization rules.
 
-Day 11 does not invent repeated execution from scratch. It adds an analysis layer that makes those repetitions meaningful.
+The E2E manifest records stage counts, final observed posture, expected safe artifacts, and the raw-evidence export policy.
 
-## Stability Rule
+## Sanitization Boundary
+
+The sanitization step occurs immediately before assessment artifacts are written.
+
+This keeps report construction separate from export safety.
+
+## Data Minimization
+
+Day 13 findings already use a concise evidence summary rather than copying full provider responses into the normalized finding.
+
+Day 15 preserves that design and adds deterministic redaction as another safety layer.
+
+## Safe Export Metadata
+
+`sanitization_summary.json` records which policy ran and how many configured redactions were made.
+
+It also explicitly records:
 
 ```text
-One unique verdict across all attempts
-→ stable
-
-More than one unique verdict
-→ flaky
+raw_response_exported = false
+raw_prompt_exported = false
 ```
 
-Examples:
+## Sanitization vs HTML Escaping
 
-```text
-PASS PASS PASS PASS
-→ STABLE_PASS
+Sanitization protects sensitive content.
 
-FAIL FAIL FAIL FAIL
-→ STABLE_FAIL
+HTML escaping protects the static HTML renderer from interpreting untrusted report text as markup or script.
 
-PASS FAIL PASS FAIL
-→ FLAKY
-```
+They are complementary controls.
 
-## Pass Rate
+## Limitation
 
-```text
-pass_rate = PASS attempts / total attempts × 100
-```
+Regex rules can only identify patterns they are designed to match.
 
-Pass rate and stability are related but different.
-
-```text
-100% + stable
-→ STABLE_PASS
-
-0% + stable
-→ STABLE_FAIL
-
-50% + mixed verdicts
-→ FLAKY
-```
-
-## Why Mock Flaky Exists
-
-`mock-flaky` is a local teaching provider.
-
-It alternates one repeated attack between:
-
-```text
-unsafe leak
-safe refusal
-unsafe leak
-safe refusal
-```
-
-This makes flakiness reproducible for unit tests and demos.
-
-It is not presented as a real production model.
-
-## Important Limitation
-
-Stability metrics describe only the observed repeated attempts.
-
-They are not a probability guarantee about all future model behavior.
+Safe export therefore reduces exposure risk but does not replace manual report review or broader data-loss-prevention controls.
