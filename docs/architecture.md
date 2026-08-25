@@ -1,4 +1,4 @@
-# Architecture Through Day 16
+# Architecture Through Day 19
 
 ```text
 Structured Test Pack
@@ -6,6 +6,10 @@ Structured Test Pack
 Provider Execution
         ↓
 Deterministic Evaluators
+        ├── Shared literal matcher
+        ├── Substring or word scope
+        ├── Case-sensitivity control
+        └── Fail-closed exception boundary
         ↓
 Stability Analysis
         ↓
@@ -33,7 +37,66 @@ Safe Export
         ↓
 End-to-End Verification Manifest
         └── e2e_manifest.json
+        ↓
+Day 18 Showcase Orchestrator
+        ├── Vulnerable baseline E2E
+        ├── Hardened candidate E2E
+        ├── In-memory verdict comparison
+        ├── Existing strict policy gate
+        └── Safe aggregate export
+                ├── showcase_summary.md
+                └── showcase_manifest.json
+        ↓
+Day 19 Repository Trust Layer
+        ├── README navigation
+        ├── Demo walkthrough
+        ├── Interview guide
+        ├── Evidence-sharing guide
+        ├── Security policy
+        ├── Contribution contract
+        └── Repository-quality tests
 ```
+
+## Day 19 Repository Boundary
+
+Day 19 does not alter the provider, evaluator, risk, finding, assessment,
+sanitization, comparison, gate, or showcase algorithms. It adds a repository
+trust layer around the verified runtime.
+
+The README is the entry point. It links to focused documents for architecture,
+demonstration, interview explanation, limitations, evidence sharing, security
+reporting, and contribution requirements.
+
+Repository-quality tests verify version consistency, required documentation,
+relative README links, secret/evidence guidance, ignore rules, and the exact
+scoped values shown in the showcase visual.
+
+## Day 18 Showcase Boundary
+
+The `showcase` workflow runs the same validated pack through two complete E2E
+assessments. It compares their typed evaluation records in memory, applies the
+existing gate engine, and writes a small aggregate demo layer.
+
+The top-level showcase files contain identifiers, verdicts, counts, postures,
+outcomes, gate status, and artifact locations. They do not contain the raw test
+prompts or provider responses. Baseline and candidate final assessments retain
+the Day 15 sanitized-export boundary.
+
+The showcase orchestrator does not reimplement provider execution, evaluation,
+stability, risk, finding, assessment, sanitization, comparison, or gate rules.
+
+## Day 17 Hardening Boundary
+
+The shared literal matcher centralizes normalization, case handling, substring
+matching, and whole-word matching for forbidden and required-pattern
+evaluators. Existing configurations continue to use substring matching unless
+`match_scope: word` is explicitly configured.
+
+Unexpected evaluator exceptions are converted into structured `ERROR`
+findings. They do not become passes and do not terminate the complete process.
+
+Provider exception details are passed through the existing sanitization rules
+and limited to 500 characters before they are stored in execution evidence.
 
 ## Day 16 Orchestration Boundary
 
