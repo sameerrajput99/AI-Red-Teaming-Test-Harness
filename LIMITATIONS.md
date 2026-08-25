@@ -58,6 +58,11 @@ They can miss semantic or context-dependent failures, including:
 They can also produce false positives. A `REVIEW` verdict means the configured
 automation could not make a reliable decision and human review is required.
 
+Day 17 word-scoped literal matching can reduce configured partial-word false
+positives, but it does not understand meaning, intent, synonyms, obfuscation,
+or language-specific tokenization. Choosing an unsuitable match scope can still
+produce false positives or false negatives.
+
 ## Stability and Risk Limitations
 
 Stability results describe only the configured number of repeated attempts.
@@ -89,6 +94,18 @@ match a configured rule can still be missed. Earlier execution and diagnostic
 artifacts may contain more detailed prompts or responses than the final
 assessment report.
 
+Day 17 redacts supported provider exception patterns and bounds their stored
+detail. This reduces exposure risk but can also remove diagnostic information;
+detailed provider troubleshooting should use access-controlled operational
+logs rather than shared assessment artifacts.
+
+The Day 18 top-level showcase summary and manifest intentionally export only
+aggregate verdict, posture, finding-count, outcome, and gate evidence. They do
+not export raw prompts or provider responses. The in-memory workflow still
+processes that evidence, and the nested assessment artifacts remain subject to
+the existing regex-based sanitization limitations and manual-review
+requirement.
+
 Therefore:
 
 - Use only fictional, public, or explicitly authorized test data.
@@ -107,6 +124,35 @@ work together and produce the expected safe artifact set.
 A passing E2E run verifies those local pipeline contracts. It does not prove
 that every external provider, production deployment, attack technique, or
 future model version will behave safely.
+
+## Showcase Boundary
+
+The Day 18 showcase uses deterministic mock providers to demonstrate the
+project's workflow in a repeatable way. Four improvements, zero regressions,
+and a passed policy gate are expected properties of the included local demo
+configuration.
+
+They are not benchmark results for a production model, proof of general risk
+reduction, or a security certification. A real assessment requires authorized
+targets, representative attack coverage, controlled evidence handling, and
+qualified human review.
+
+## Documentation and Portfolio Boundary
+
+Day 19 documentation explains the verified local project behavior and provides
+a repeatable recruiter-facing walkthrough. Documentation, badges, diagrams, and
+the showcase visual do not add new security coverage or increase the strength
+of the underlying evidence.
+
+The included visual reports only the verified deterministic Day 18 values. It
+must remain accompanied by its scope disclaimer and must not be presented as a
+real-model benchmark, production risk-reduction metric, penetration-test
+certificate, or independent audit result.
+
+Repository ignore rules reduce accidental commits but do not protect files
+uploaded manually through the GitHub interface. Every uploaded file and image
+still requires human review for secrets, raw evidence, private paths, and
+personal information.
 
 ## Authorized Use Only
 

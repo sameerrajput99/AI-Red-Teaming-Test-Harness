@@ -1,17 +1,22 @@
 # AI Red Teaming Test Harness
 
+[![AI Security Gate](https://github.com/sameerrajput99/AI-Red-Teaming-Test-Harness/actions/workflows/ai-security-gate.yml/badge.svg)](https://github.com/sameerrajput99/AI-Red-Teaming-Test-Harness/actions/workflows/ai-security-gate.yml)
+![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB)
+![License MIT](https://img.shields.io/badge/License-MIT-22c55e)
+
 A safe, reproducible Python framework for structured AI red teaming,
 deterministic evaluation, stability analysis, risk prioritization, normalized
-findings, sanitized assessment reporting, and end-to-end verification.
+findings, sanitized assessment reporting, end-to-end verification, and a
+repeatable vulnerable-versus-hardened showcase.
 
 ## Current Status
 
 | Item | Value |
 | --- | --- |
-| Project phase | Day 16 complete |
-| Package version | `0.16.0` |
+| Project phase | Day 19 complete |
+| Package version | `0.19.0` |
 | Python | `3.10+` |
-| Regression baseline | `92 passed` |
+| Regression baseline | `114 passed` |
 | License | MIT |
 
 ## What the Harness Does
@@ -32,6 +37,9 @@ tests. It can:
 - Build consolidated assessment reports.
 - Redact configured sensitive-data patterns before final export.
 - Verify the complete pipeline with integration and E2E tests.
+- Reduce configured literal-matching false positives with explicit word scope.
+- Contain evaluator failures and redact/bound stored provider error details.
+- Run one recruiter-friendly vulnerable-versus-hardened showcase with a policy gate.
 
 ## Architecture
 
@@ -57,10 +65,25 @@ Sanitization
 Safe Assessment Artifacts
       ↓
 E2E Manifest
+      ↓
+Vulnerable vs Hardened Showcase
+      ↓
+Safe Showcase Summary + Manifest
 ```
 
 Day 16 orchestrates the existing production components; it does not duplicate
 their evaluator, scoring, findings, assessment, or sanitization logic.
+
+Day 17 hardens existing execution and evaluation boundaries while preserving
+legacy substring matching as the default for existing test packs.
+
+Day 18 composes the existing E2E, comparison, and policy-gate capabilities into
+one repeatable demonstration without exporting raw attack or response text in
+the top-level showcase files.
+
+Day 19 finalizes the GitHub documentation, recruiter walkthrough, interview
+guide, evidence-sharing guidance, security reporting policy, and contribution
+contract without changing the verified Day 18 runtime behavior.
 
 ## Providers
 
@@ -113,8 +136,90 @@ python -m pytest
 Expected baseline:
 
 ```text
-92 passed
+114 passed
 ```
+
+## Documentation Guide
+
+| Document | Purpose |
+| --- | --- |
+| [Architecture](docs/architecture.md) | Components, workflow, and trust boundaries |
+| [Demo walkthrough](docs/demo_walkthrough.md) | One-command demo and presentation script |
+| [Interview guide](docs/interview_guide.md) | Technical questions and honest answers |
+| [Evidence-sharing guide](docs/evidence_sharing.md) | Safe portfolio and report-sharing rules |
+| [Limitations](LIMITATIONS.md) | Correct interpretation of project results |
+| [Security policy](SECURITY.md) | Private vulnerability reporting and authorization boundary |
+| [Contributing](CONTRIBUTING.md) | Setup, test, gate, and pull-request requirements |
+
+## Day 18 Demo & Showcase Scenario
+
+Run the complete deterministic showcase from the project root:
+
+```powershell
+showcase-ai-security
+```
+
+The command uses:
+
+```text
+Test pack  = test_packs/day18_showcase_pack.yaml
+Policy     = policies/strict_gate.yaml
+Baseline   = mock-vulnerable
+Candidate  = mock-hardened
+```
+
+Expected result:
+
+| Measure | Result |
+| --- | ---: |
+| Test scenarios | 5 |
+| Improved | 4 |
+| Regressed | 0 |
+| Unchanged pass | 1 |
+| Candidate failures | 0 |
+| Policy gate | `PASSED` |
+
+Every run creates one `output/SHOWCASE-*` directory containing separate
+sanitized baseline and candidate assessments plus:
+
+```text
+showcase_summary.md
+showcase_manifest.json
+```
+
+These top-level showcase files contain aggregate verdict evidence, not raw
+attack prompts or provider responses. Review all generated artifacts before
+external sharing.
+
+![Verified Day 18 showcase result](docs/assets/day18_showcase_result.svg)
+
+## Day 17 Code Quality & Hardening
+
+Validate and evaluate the focused Day 17 pack:
+
+```powershell
+validate-ai-tests test_packs/day17_hardening_pack.yaml
+evaluate-ai-tests test_packs/day17_hardening_pack.yaml --provider mock-vulnerable
+evaluate-ai-tests test_packs/day17_hardening_pack.yaml --provider mock-hardened
+```
+
+Expected deterministic results:
+
+| Provider | PASS | FAIL | REVIEW | ERROR |
+| --- | ---: | ---: | ---: | ---: |
+| `mock-vulnerable` | 2 | 1 | 0 | 0 |
+| `mock-hardened` | 3 | 0 | 0 | 0 |
+
+Literal evaluators now support an explicit false-positive control:
+
+```yaml
+match_scope: word
+```
+
+The default remains `substring` for backward compatibility. Unexpected
+evaluator exceptions become structured `ERROR` findings, while provider error
+details are redacted with the existing sanitization rules and bounded before
+storage.
 
 ## Day 16 End-to-End Verification
 
@@ -172,6 +277,7 @@ risk-ai-tests       Calculate risk records
 findings-ai-tests   Build normalized security findings
 assessment-ai-tests Build sanitized assessment reports
 e2e-ai-tests        Run the complete Day 16 workflow
+showcase-ai-security Run the Day 18 vulnerable-vs-hardened demo
 ```
 
 Use `--help` with any command for its current arguments. Example:
@@ -240,21 +346,24 @@ evaluators.
 ```text
 AI-Red-Teaming-Test-Harness/
 ├── .github/workflows/       # Regression tests and security gate
-├── docs/                    # Architecture and Day 1–16 concepts
+├── docs/                    # Architecture, concepts, demo, interview, evidence
 ├── policies/                # Security-gate policy
 ├── src/ai_red_teaming_harness/
 │   ├── assessment/          # Consolidated assessment model and export
 │   ├── comparisons/         # Baseline-vs-candidate comparison
 │   ├── e2e/                 # Day 16 orchestration and manifest
-│   ├── evaluators/          # Deterministic response checks
+│   ├── evaluators/          # Deterministic checks and shared literal matching
 │   ├── findings/            # Normalized finding generation
 │   ├── gates/               # Policy enforcement
 │   ├── providers/           # Mock and optional live providers
 │   ├── risk/                # Risk scoring
 │   ├── sanitization/        # Safe-export redaction
+│   ├── showcase/            # Day 18 comparison demo orchestration
 │   └── stability/           # Repeated-run analysis
 ├── test_packs/              # Structured YAML security scenarios
 ├── tests/                   # Automated regression tests
+├── CONTRIBUTING.md          # Change and verification contract
+├── SECURITY.md              # Responsible vulnerability reporting
 ├── LIMITATIONS.md
 ├── LICENSE
 └── pyproject.toml
