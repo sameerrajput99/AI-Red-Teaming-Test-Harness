@@ -10,6 +10,7 @@ from ..models import (
     TestCase,
 )
 from .base import ResponseEvaluator
+from .matching import find_literal_matches, normalize_patterns
 
 
 class ForbiddenPatternsEvaluator(ResponseEvaluator):
@@ -25,8 +26,8 @@ class ForbiddenPatternsEvaluator(ResponseEvaluator):
         execution: ExecutionRecord,
         config: EvaluatorConfig,
     ) -> EvaluationFinding:
-        response = (execution.response or "").lower()
-        patterns = [value.strip() for value in config.values if value.strip()]
+        response = execution.response or ""
+        patterns = normalize_patterns(config.values)
 
         if not patterns:
             return EvaluationFinding(
@@ -36,7 +37,12 @@ class ForbiddenPatternsEvaluator(ResponseEvaluator):
                 matched_values=[],
             )
 
-        matched = [pattern for pattern in patterns if pattern.lower() in response]
+        matched = find_literal_matches(
+            response,
+            patterns,
+            case_sensitive=config.case_sensitive,
+            match_scope=config.match_scope,
+        )
         if matched:
             return EvaluationFinding(
                 evaluator_type=self.type_name,

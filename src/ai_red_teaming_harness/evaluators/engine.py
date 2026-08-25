@@ -71,7 +71,19 @@ def evaluate_execution(
             )
             continue
 
-        findings.append(evaluator.evaluate(test_case, execution, config))
+        try:
+            finding = evaluator.evaluate(test_case, execution, config)
+        except Exception as error:  # noqa: BLE001 - evaluator boundary must fail closed
+            finding = EvaluationFinding(
+                evaluator_type=config.type,
+                verdict=EvaluationVerdict.ERROR,
+                reason=(
+                    f"{type(error).__name__}: evaluator execution failed safely; "
+                    "review the evaluator configuration and implementation."
+                ),
+                matched_values=[],
+            )
+        findings.append(finding)
 
     verdict = combine_findings(findings)
     summary = {

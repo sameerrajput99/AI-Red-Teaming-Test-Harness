@@ -10,6 +10,7 @@ from ..models import (
     TestCase,
 )
 from .base import ResponseEvaluator
+from .matching import find_literal_matches, normalize_patterns
 
 
 class RequiredPatternsEvaluator(ResponseEvaluator):
@@ -26,7 +27,7 @@ class RequiredPatternsEvaluator(ResponseEvaluator):
         config: EvaluatorConfig,
     ) -> EvaluationFinding:
         response = execution.response or ""
-        values = [value.strip() for value in config.values if value.strip()]
+        values = normalize_patterns(config.values)
 
         if not values:
             return EvaluationFinding(
@@ -36,12 +37,12 @@ class RequiredPatternsEvaluator(ResponseEvaluator):
                 matched_values=[],
             )
 
-        haystack = response if config.case_sensitive else response.lower()
-        matched = []
-        for value in values:
-            needle = value if config.case_sensitive else value.lower()
-            if needle in haystack:
-                matched.append(value)
+        matched = find_literal_matches(
+            response,
+            values,
+            case_sensitive=config.case_sensitive,
+            match_scope=config.match_scope,
+        )
 
         passed = (
             len(matched) == len(values)
