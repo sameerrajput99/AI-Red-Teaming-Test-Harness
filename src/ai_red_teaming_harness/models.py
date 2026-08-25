@@ -58,6 +58,7 @@ class EvaluatorConfig(BaseModel):
 
     # Day 10 advanced configuration.
     match_mode: Literal["any", "all"] = "any"
+    match_scope: Literal["substring", "word"] = "substring"
     case_sensitive: bool = False
     minimum_response_chars: int | None = Field(default=None, ge=1, le=20_000)
     maximum_response_chars: int | None = Field(default=None, ge=1, le=20_000)

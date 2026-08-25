@@ -8,6 +8,26 @@ from uuid import uuid4
 
 from .models import ExecutionRecord, ExecutionStatus, TestCase, TestPack
 from .providers.base import ChatProvider
+from .sanitization.engine import sanitize_text
+
+
+MAX_PROVIDER_ERROR_DETAIL_CHARS = 500
+
+
+def _safe_provider_error(error: Exception) -> str:
+    """Return a bounded, redacted provider error suitable for stored evidence."""
+
+    try:
+        detail = " ".join(str(error).split())
+    except Exception:  # noqa: BLE001 - exception formatting must not fail the run
+        detail = "Provider execution failed."
+
+    sanitized, _ = sanitize_text(detail)
+    if not sanitized:
+        sanitized = "Provider execution failed."
+
+    bounded = sanitized[:MAX_PROVIDER_ERROR_DETAIL_CHARS]
+    return f"{type(error).__name__}: {bounded}"
 
 
 def execute_test_case(
@@ -45,7 +65,7 @@ def execute_test_case(
             response=None,
             execution_status=ExecutionStatus.ERROR,
             latency_ms=latency_ms,
-            error_message=f"{type(error).__name__}: {error}",
+            error_message=_safe_provider_error(error),
             timestamp=datetime.now(timezone.utc),
         )
 
