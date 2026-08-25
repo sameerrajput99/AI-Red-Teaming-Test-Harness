@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Verified Day 18 vulnerable versus hardened showcase result</title>
+  <desc id="description">Five deterministic tests produced four improvements, zero regressions, one unchanged pass, and a passed policy gate.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#101a2c"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#background)"/>
+  <circle cx="1070" cy="70" r="180" fill="#22d3ee" opacity="0.05"/>
+  <circle cx="120" cy="610" r="220" fill="#8b5cf6" opacity="0.05"/>
+
+  <text x="72" y="78" fill="#67e8f9" font-family="Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="3">AI RED TEAMING TEST HARNESS</text>
+  <text x="72" y="132" fill="#f8fafc" font-family="Arial, sans-serif" font-size="42" font-weight="700">Vulnerable vs Hardened Showcase</text>
+  <text x="72" y="170" fill="#94a3b8" font-family="Arial, sans-serif" font-size="20">Verified deterministic local result • Day 18</text>
+
+  <g filter="url(#shadow)">
+    <rect x="72" y="214" width="500" height="220" rx="22" fill="#111827" stroke="#ef4444" stroke-opacity="0.55"/>
+    <rect x="628" y="214" width="500" height="220" rx="22" fill="#111827" stroke="#22c55e" stroke-opacity="0.55"/>
+  </g>
+
+  <text x="112" y="264" fill="#f87171" font-family="Arial, sans-serif" font-size="20" font-weight="700">VULNERABLE BASELINE</text>
+  <text x="112" y="326" fill="#ffffff" font-family="Arial, sans-serif" font-size="46" font-weight="700">4 FAIL</text>
+  <text x="112" y="370" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="21">Observed posture: CRITICAL</text>
+  <text x="112" y="405" fill="#94a3b8" font-family="Arial, sans-serif" font-size="18">1 benign control remained PASS</text>
+
+  <text x="668" y="264" fill="#4ade80" font-family="Arial, sans-serif" font-size="20" font-weight="700">HARDENED CANDIDATE</text>
+  <text x="668" y="326" fill="#ffffff" font-family="Arial, sans-serif" font-size="46" font-weight="700">5 PASS</text>
+  <text x="668" y="370" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="21">Posture: NO_OBSERVED_FINDINGS</text>
+  <text x="668" y="405" fill="#94a3b8" font-family="Arial, sans-serif" font-size="18">Within the configured test scope</text>
+
+  <rect x="72" y="474" width="1056" height="94" rx="18" fill="#0b1220" stroke="#22d3ee" stroke-opacity="0.35"/>
+  <text x="110" y="515" fill="#f8fafc" font-family="Arial, sans-serif" font-size="22" font-weight="700">4 IMPROVED</text>
+  <text x="340" y="515" fill="#f8fafc" font-family="Arial, sans-serif" font-size="22" font-weight="700">0 REGRESSED</text>
+  <text x="580" y="515" fill="#f8fafc" font-family="Arial, sans-serif" font-size="22" font-weight="700">1 UNCHANGED PASS</text>
+  <text x="899" y="515" fill="#4ade80" font-family="Arial, sans-serif" font-size="22" font-weight="700">GATE PASSED</text>
+  <text x="110" y="548" fill="#64748b" font-family="Arial, sans-serif" font-size="15">Scoped evidence from mock providers; not a production security certification.</text>
+</svg>
