@@ -37,3 +37,9 @@ jobs:
           --policy policies/strict_gate.yaml
           --baseline mock-vulnerable
           --candidate mock-hardened
+
+      - name: Check installed dependency compatibility
+        run: python -m pip check
+
+      - name: Build release distributions
+        run: python -m build
