@@ -28,6 +28,13 @@ gate-ai-tests test_packs/day8_expanded_security_pack.yaml `
   --candidate mock-hardened
 ```
 
+Verify dependency compatibility and build the release distributions:
+
+```powershell
+python -m pip check
+python -m build
+```
+
 The current verified regression baseline is documented in `README.md`. A pull
 request must not reduce coverage or silently change existing test-pack
 semantics.
@@ -49,6 +56,7 @@ semantics.
 
 - [ ] The complete test suite passes locally.
 - [ ] The strict local security gate passes.
+- [ ] Dependency compatibility and package build checks pass.
 - [ ] New behavior has automated tests.
 - [ ] Documentation and version metadata agree.
 - [ ] No secret or sensitive evidence is included.

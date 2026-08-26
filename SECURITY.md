@@ -6,7 +6,7 @@ Security fixes are applied to the current development line:
 
 | Version | Supported |
 | --- | --- |
-| `0.19.x` | Yes |
+| `1.0.x` | Yes |
 | Earlier versions | Upgrade before reporting reproducibility issues |
 
 ## Reporting a Vulnerability

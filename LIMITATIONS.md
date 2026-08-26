@@ -154,6 +154,19 @@ uploaded manually through the GitHub interface. Every uploaded file and image
 still requires human review for secrets, raw evidence, private paths, and
 personal information.
 
+## Release Boundary
+
+Version `1.0.0`, a passing regression suite, a passing configured gate, and a
+successful wheel/source build show that the repository satisfied its defined
+local release checks. They do not provide package signing, provenance
+attestation, dependency-vulnerability certification, penetration-test
+certification, or a guarantee of secure production deployment.
+
+GitHub tags and release artifacts must be created from the exact verified
+commit. Anyone publishing artifacts remains responsible for reviewing their
+contents, protecting credentials, and preserving the documented assessment
+scope.
+
 ## Authorized Use Only
 
 This project does not authorize:

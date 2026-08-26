@@ -3,6 +3,7 @@
 [![AI Security Gate](https://github.com/sameerrajput99/AI-Red-Teaming-Test-Harness/actions/workflows/ai-security-gate.yml/badge.svg)](https://github.com/sameerrajput99/AI-Red-Teaming-Test-Harness/actions/workflows/ai-security-gate.yml)
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB)
 ![License MIT](https://img.shields.io/badge/License-MIT-22c55e)
+![Version 1.0.0](https://img.shields.io/badge/version-1.0.0-7c3aed)
 
 A safe, reproducible Python framework for structured AI red teaming,
 deterministic evaluation, stability analysis, risk prioritization, normalized
@@ -13,10 +14,10 @@ repeatable vulnerable-versus-hardened showcase.
 
 | Item | Value |
 | --- | --- |
-| Project phase | Day 19 complete |
-| Package version | `0.19.0` |
+| Project phase | Day 20 complete — final `v1.0.0` release |
+| Package version | `1.0.0` |
 | Python | `3.10+` |
-| Regression baseline | `114 passed` |
+| Regression baseline | `120 passed` |
 | License | MIT |
 
 ## What the Harness Does
@@ -85,6 +86,10 @@ Day 19 finalizes the GitHub documentation, recruiter walkthrough, interview
 guide, evidence-sharing guidance, security reporting policy, and contribution
 contract without changing the verified Day 18 runtime behavior.
 
+Day 20 performs final QA, verifies release packaging, records the complete
+changelog and release notes, and graduates the 20-day project to version
+`1.0.0` without changing the verified runtime semantics.
+
 ## Providers
 
 | Provider | Purpose |
@@ -136,7 +141,7 @@ python -m pytest
 Expected baseline:
 
 ```text
-114 passed
+120 passed
 ```
 
 ## Documentation Guide
@@ -150,6 +155,39 @@ Expected baseline:
 | [Limitations](LIMITATIONS.md) | Correct interpretation of project results |
 | [Security policy](SECURITY.md) | Private vulnerability reporting and authorization boundary |
 | [Contributing](CONTRIBUTING.md) | Setup, test, gate, and pull-request requirements |
+| [Changelog](CHANGELOG.md) | Version history and the Day 1–20 capability milestones |
+| [v1.0.0 release notes](RELEASE_NOTES_v1.0.0.md) | Verified release contents, checks, and scope |
+| [Release checklist](RELEASE_CHECKLIST.md) | Reusable pre-release and GitHub release procedure |
+| [Portfolio showcase](docs/portfolio_showcase.md) | Recruiter summary and ready-to-edit LinkedIn post |
+| [Day 20 concepts](docs/concepts_day20.md) | Final QA, packaging, tags, releases, and scope |
+
+## Day 20 Final Release Verification
+
+Run the complete local release checks from the project root:
+
+```powershell
+python -m pytest
+gate-ai-tests test_packs/day8_expanded_security_pack.yaml `
+  --policy policies/strict_gate.yaml `
+  --baseline mock-vulnerable `
+  --candidate mock-hardened
+python -m pip check
+python -m build
+```
+
+Expected verified results:
+
+```text
+120 tests passed
+Gate status: PASSED
+Dependency compatibility: No broken requirements found
+Wheel built: ai_red_teaming_test_harness-1.0.0-py3-none-any.whl
+Source distribution built: ai_red_teaming_test_harness-1.0.0.tar.gz
+```
+
+The generated `build/` and `dist/` directories are local release artifacts and
+remain excluded from Git. Review [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md)
+before creating the GitHub tag and release.
 
 ## Day 18 Demo & Showcase Scenario
 
@@ -363,6 +401,9 @@ AI-Red-Teaming-Test-Harness/
 ├── test_packs/              # Structured YAML security scenarios
 ├── tests/                   # Automated regression tests
 ├── CONTRIBUTING.md          # Change and verification contract
+├── CHANGELOG.md             # Version history
+├── RELEASE_CHECKLIST.md     # Reusable release procedure
+├── RELEASE_NOTES_v1.0.0.md  # Final release notes
 ├── SECURITY.md              # Responsible vulnerability reporting
 ├── LIMITATIONS.md
 ├── LICENSE
