@@ -1,4 +1,4 @@
-# Architecture Through Day 19
+# Architecture Through Day 20
 
 ```text
 Structured Test Pack
@@ -55,7 +55,31 @@ Day 19 Repository Trust Layer
         ├── Security policy
         ├── Contribution contract
         └── Repository-quality tests
+        ↓
+Day 20 Release Trust Layer
+        ├── Version 1.0.0 consistency
+        ├── Complete regression verification
+        ├── Configured security gate
+        ├── Dependency compatibility check
+        ├── Wheel and source distribution build
+        ├── Release notes and changelog
+        └── Release-readiness tests
 ```
+
+## Day 20 Release Boundary
+
+Day 20 packages the verified Day 1–19 implementation as version `1.0.0`. It
+does not change provider behavior, evaluator semantics, risk scoring, findings,
+sanitization, comparison, gate, or showcase algorithms.
+
+The release layer verifies version consistency, the complete regression suite,
+the configured local security gate, installed dependency compatibility, and
+the ability to build standard Python wheel and source distributions. Release
+notes and portfolio material describe only the verified local scope.
+
+A successful build proves that the repository can produce installable package
+artifacts. It is not a code-signing guarantee, supply-chain audit, penetration
+test, or production security certification.
 
 ## Day 19 Repository Boundary
 

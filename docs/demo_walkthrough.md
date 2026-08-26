@@ -21,7 +21,7 @@ python -m pytest
 Expected verified regression baseline:
 
 ```text
-114 passed
+120 passed
 ```
 
 ## One-Command Showcase

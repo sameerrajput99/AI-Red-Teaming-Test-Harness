@@ -53,6 +53,13 @@ It proves that the included deterministic test pack, providers, evaluators,
 comparison rules, and policy gate work together as configured. It does not
 prove general security for a production model.
 
+### What does the version 1.0.0 release prove?
+
+It proves that the repository passed 120 automated regression checks, the
+configured local security gate, dependency compatibility validation, and the
+standard Python package build in the verified environment. It does not prove
+that a production AI system is fully secure or independently certified.
+
 ### Why include a benign control?
 
 Security hardening should stop unsafe behavior without unnecessarily blocking
