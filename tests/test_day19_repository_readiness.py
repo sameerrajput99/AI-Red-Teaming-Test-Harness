@@ -15,11 +15,12 @@ def _read(relative_path: str) -> str:
     return (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
 
 
-def test_day19_version_metadata_is_consistent() -> None:
+def test_package_version_metadata_is_consistent() -> None:
     pyproject = _read("pyproject.toml")
+    version_match = re.search(r'^version = "([^"]+)"$', pyproject, re.MULTILINE)
 
-    assert 'version = "0.19.0"' in pyproject
-    assert ai_red_teaming_harness.__version__ == "0.19.0"
+    assert version_match is not None
+    assert ai_red_teaming_harness.__version__ == version_match.group(1)
 
 
 def test_required_repository_documents_exist() -> None:
